@@ -28,7 +28,14 @@ static char overlayKey;
 {
     if (!self.overlay) {
         [self setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-        self.overlay = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) + 20)];
+
+        CGFloat statusBarHeight = 0;
+    
+        if (![UIApplication sharedApplication].isStatusBarHidden) {
+            statusBarHeight += 20;
+        }
+
+        self.overlay = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) + statusBarHeight)];
         self.overlay.userInteractionEnabled = NO;
         self.overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth;    // Should not set `UIViewAutoresizingFlexibleHeight`
         [[self.subviews firstObject] insertSubview:self.overlay atIndex:0];
@@ -67,6 +74,20 @@ static char overlayKey;
     [self setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     [self.overlay removeFromSuperview];
     self.overlay = nil;
+}
+
+- (void)lt_fixFrame {
+    if (!self.overlay) {
+        return;
+    }
+    
+    CGFloat statusBarHeight = 0;
+    
+    if (![UIApplication sharedApplication].isStatusBarHidden) {
+        statusBarHeight += 20;
+    }
+    
+    self.overlay.frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds) + statusBarHeight);
 }
 
 @end
